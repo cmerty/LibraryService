@@ -1,0 +1,19 @@
+package com.example.demo.model.DTO.Category;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.NotBlank;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class CategoryDtoOnlyWithName {
+
+    @NotBlank
+    private String nameOfCategory;
+
+}
+
+
