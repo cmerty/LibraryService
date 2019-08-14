@@ -1,8 +1,5 @@
 package com.example.demo.service.DBService;
 
-import com.example.demo.model.DTO.Category.CategoryDtoOnlyWithName;
-import com.example.demo.service.Interfaces.BookServiceInterface;
-import com.example.demo.utility.exception.NotFoundException;
 import com.example.demo.model.Author;
 import com.example.demo.model.Book;
 import com.example.demo.model.Category;
@@ -10,12 +7,16 @@ import com.example.demo.model.DTO.Book.BookDto;
 import com.example.demo.model.DTO.Book.BookDtoWithAuthorID;
 import com.example.demo.model.DTO.Book.BookDtoWithBookID;
 import com.example.demo.model.DTO.Book.BookDtoWithIdAndCategories;
+import com.example.demo.model.DTO.Category.CategoryDtoOnlyWithName;
 import com.example.demo.model.DTO.ID.IDDto;
 import com.example.demo.model.DTO.ID.ListOfIDDto;
 import com.example.demo.repository.AuthorRepository;
 import com.example.demo.repository.BooksRepository;
 import com.example.demo.repository.CategoriesRepository;
-import com.example.demo.service.Convertors.EntityConverter;
+import com.example.demo.service.Convertors.BookConverterImpl;
+import com.example.demo.service.Convertors.BookDtoWithAuthorIdConverterImpl;
+import com.example.demo.service.Interfaces.BookServiceInterface;
+import com.example.demo.utility.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -38,9 +39,7 @@ public class BookService implements BookServiceInterface {
 
     private final CategoriesRepository categoriesRepository;
 
-    private final EntityConverter<Book, BookDto> bookConverter;
-
-    private final EntityConverter<Book, BookDtoWithAuthorID> bookBookDtoWithAuthorIDEntityConverter;
+    private final BookConverterImpl bookConverter;
 
     @Override
     @Transactional
@@ -67,7 +66,7 @@ public class BookService implements BookServiceInterface {
                 findById(bookDtoWithAuthorID.getAuthorId()).
                 orElseThrow(() -> new NotFoundException("Author not found"));
 
-        Book book = bookBookDtoWithAuthorIDEntityConverter.convertRevers(bookDtoWithAuthorID);
+        Book book = bookConverter.convertBookDtoWithAuthorIdToBook(bookDtoWithAuthorID);
 
         book.setAuthor(author);
         book = booksRepository.save(book);
@@ -120,7 +119,7 @@ public class BookService implements BookServiceInterface {
 
         List<Book> book = booksRepository.findAll();
         return book.stream().
-                map(bookConverter::convert)
+                map(bookConverter::convertBookToBookDto)
                 .collect(toList());
     }
 

@@ -1,6 +1,8 @@
 package com.example.demo.service.DBService;
 
+import com.example.demo.model.Mail;
 import com.example.demo.service.Interfaces.AccountServiceInterface;
+import com.example.demo.service.MailSender.MailServiceImpl;
 import com.example.demo.utility.exception.ConflictException;
 import com.example.demo.utility.exception.NotFoundException;
 import com.example.demo.model.Account;
@@ -14,14 +16,19 @@ import com.example.demo.model.DTO.TokenDto;
 import com.example.demo.repository.AccountRepository;
 import com.example.demo.repository.BooksRepository;
 import com.example.demo.repository.RoleRepository;
+import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
+import java.io.IOException;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -39,6 +46,8 @@ public class AccountService implements AccountServiceInterface {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final MailServiceImpl emailService;
+
     @Override
     public IDDto createNewAccount(AccountDto accountDto) {
 
@@ -54,6 +63,8 @@ public class AccountService implements AccountServiceInterface {
             account.setRole(roleRepository.findByRole("USER").get());
 
         accountRepository.save(account);
+
+        signUpMessage(account);
         return new IDDto(account.getId());
     }
 
@@ -157,6 +168,24 @@ public class AccountService implements AccountServiceInterface {
         return new AccountDtoWithNameAndEmail(account.getName(), account.getEmail());
     }
 
+    private void signUpMessage(Account account) {
+        Mail mail = new Mail();
+        mail.setFrom("tt934112@gmail.com");
+        mail.setTo("tt934112@gmail.com");
+        mail.setSubject("Now you are a part of our great book's family!");
+        Map<String, Object> model = new HashMap<>();
+        model.put("name", account.getName());
+        model.put("email", account.getEmail());
+        model.put("location","Kiev,Ukraine");
+        model.put("signature", "www.theBestLibrary.com");
+        mail.setModel(model);
+        try {
+            emailService.sendSimpleMessage(mail);
+        } catch (MessagingException | IOException | TemplateException e) {
+            e.printStackTrace();
+        }
+    }
+
     private String getSecurityContextName() {
         return SecurityContextHolder
                 .getContext()
@@ -173,5 +202,6 @@ public class AccountService implements AccountServiceInterface {
         return booksRepository.
                 findById(idDto.getId()).orElseThrow(() -> new NotFoundException("Book has not found"));
     }
+
 
 }

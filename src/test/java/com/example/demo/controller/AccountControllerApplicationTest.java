@@ -508,7 +508,7 @@ public class AccountControllerApplicationTest {
         author = authorRepository.save(author);
 
         Book book = new Book();
-        book.setName("Как вийти з запою");
+        book.setName("Як вийти");
         book.setDescription("Ніяк");
         book.setAuthor(author);
 

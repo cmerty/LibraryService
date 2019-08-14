@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,8 +16,9 @@ import static java.util.Objects.isNull;
 @Data
 @Entity
 @Table(name = "Book")
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Book {
 
     @Id

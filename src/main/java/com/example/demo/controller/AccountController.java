@@ -39,13 +39,7 @@ public class AccountController {
         return accountServiceInterface.getInfo();
     }
 
-   /* @ApiOperation(value = "Get list of accounts in the System ", response = Iterable.class, tags = "getAllAccounts")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Suceess|OK"),
-            @ApiResponse(code = 401, message = "not authorized!"),
-            @ApiResponse(code = 403, message = "forbidden!"),
-            @ApiResponse(code = 404, message = "not found!") })
-    */
+
     @GetMapping(value = "/all")
     public List<AccountDtoWithNameAndEmail> allAccounts() {
         return accountServiceInterface.getAllAccounts();

@@ -1,8 +1,5 @@
 package com.example.demo.service.DBService;
 
-import com.example.demo.service.Interfaces.AuthorServiceInterface;
-import com.example.demo.utility.exception.NoContentException;
-import com.example.demo.utility.exception.NotFoundException;
 import com.example.demo.model.Author;
 import com.example.demo.model.Book;
 import com.example.demo.model.DTO.Author.AuthorDto;
@@ -13,7 +10,11 @@ import com.example.demo.model.DTO.Book.BookDtoWithBookID;
 import com.example.demo.model.DTO.ID.IDDto;
 import com.example.demo.repository.AuthorRepository;
 import com.example.demo.repository.BooksRepository;
-import com.example.demo.service.Convertors.EntityConverter;
+import com.example.demo.service.Convertors.AuthorConverterImpl;
+import com.example.demo.service.Convertors.BookConverterImpl;
+import com.example.demo.service.Interfaces.AuthorServiceInterface;
+import com.example.demo.utility.exception.NoContentException;
+import com.example.demo.utility.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -33,9 +34,9 @@ public class AuthorService implements AuthorServiceInterface {
 
     private final BooksRepository booksRepository;
 
-    private final EntityConverter<Author, AuthorDto> authorConverter;
+    private final AuthorConverterImpl authorConverter;
 
-    private final EntityConverter<Book, BookDto> bookConverter;
+    private final BookConverterImpl bookConverter;
 
     @Transactional
     @Override
@@ -50,7 +51,7 @@ public class AuthorService implements AuthorServiceInterface {
     public List<AuthorDtoWithBook> addBookToAuthor(Long id, BookDto bookDto) {
         Author author = authorRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Author not found"));
-        Book book = bookConverter.convertRevers(bookDto);
+        Book book = bookConverter.convertBookDtoToBook(bookDto);
         author.addBook(book);
         author = authorRepository.save(author);
         Optional<List<Book>> allByAuthor = booksRepository.findAllByAuthor(author);
@@ -115,7 +116,7 @@ public class AuthorService implements AuthorServiceInterface {
             authorRepository.save(author);
         }
         return author.getBooksList().stream()
-                .map(bookConverter::convert)
+                .map(bookConverter::convertBookToBookDto)
                 .collect(toList());
     }
 

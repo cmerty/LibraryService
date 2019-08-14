@@ -2,6 +2,7 @@ package com.example.demo.model.DTO.Author;
 
 import com.example.demo.model.DTO.Book.BookDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class AuthorDto {
 
     @NotBlank
